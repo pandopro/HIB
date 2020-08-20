@@ -3,6 +3,7 @@ package com.project.controller.restcontroller;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
+import com.google.api.services.gmail.model.MessagePartHeader;
 import com.google.api.services.gmail.model.ModifyMessageRequest;
 import com.nimbusds.jose.util.Base64URL;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,6 @@ import java.util.stream.Stream;
 public class ParseGmailController {
 
     public static Gmail gmail;
-
     @PostMapping (value = "/unreademails")
     Map<String, Boolean> getUnreadEmails(@RequestBody List<String> emails) throws IOException {
         Map<String, Boolean> unreadEmails = new HashMap<>();
@@ -39,7 +39,7 @@ public class ParseGmailController {
         }
         return unreadEmails;
     }
-
+    //Получение списка не прочитанных писем для фидбэков
     @PostMapping (value = "/unreadgmail")
     Map<String, List<String>> getUnreadContent (@RequestBody List<String> emails) {
         Map<String, List<String>> unreadcontent = new HashMap<>();
@@ -57,13 +57,16 @@ public class ParseGmailController {
                         }
                     });
             messagesResponse.forEach(message -> {
-                            String email = message.getPayload().getHeaders().stream()
-                                    .filter(headers -> headers.getName().equals("From")).findFirst().get().getValue().split("<")[1].replace(">", "");
-                            String subject = message.getPayload().getHeaders().stream()
-                                    .filter(headers -> headers.getName().equals("Subject")).findFirst().get().getValue();
-                            String snippet = message.getSnippet();
-                List<String> content = Arrays.asList(subject, snippet);
-                unreadcontent.put(email, content);
+                    String email =  message.getPayload().getHeaders().stream()
+                            .filter(headers -> headers.getName().equals("From")).findFirst().get().getValue().split("<")[1].replace(">", "");
+                    String subject = message.getPayload().getHeaders().stream()
+                            .filter(headers -> headers.getName().equals("Subject"))
+                            .findFirst()
+                          .orElse(new MessagePartHeader().setValue("(no subject)"))
+                            .getValue();
+                    String snippet = message.getSnippet();
+                    List<String> content = Arrays.asList(subject, snippet);
+                    unreadcontent.put(email, content);
             });
         }
         return unreadcontent;

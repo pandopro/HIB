@@ -158,6 +158,7 @@ async function setLocaleFields() {
             $(".dateOfOrder-loc").text(localeFields['dateOfOrder']);
             $(".orderStatus-loc").text(localeFields['orderStatus']);
             $(".show-btn").text(localeFields['show']);
+            $(".close-order").text(localeFields['cancel']);
 
             //Регистрация
             $('.signin-loc').text(localeFields['signin']);
@@ -431,7 +432,7 @@ function getLanguage() {
                 }
                 currentLangFull = getFullNameOfLanguage(listOfLanguage[language]);
                 html += `<li>
-                             <a onclick="chooseLanguage('${listOfLanguage[language]}')">${currentLangFull}</a>
+                             <a href="#" onclick="chooseLanguage('${listOfLanguage[language]}')">${currentLangFull}</a>
                         </li>`
                 // html += `<a class="dropdown-item lang" onclick="chooseLanguage('${listOfLanguage[language]}')" id="${listOfLanguage[language]}">
                 //             <img src="../static/icons/${listOfLanguage[language]}.png"
